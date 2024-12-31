@@ -13,6 +13,8 @@ def parse_args():
     parser.add_argument("-t", "--type", default=0, type=int)
     parser.add_argument("-d", "--debug", action="store_true")
     parser.add_argument("-o", "--output", default="config_output", type=str)
+    parser.add_argument("--arch", default="x86", type=str)
+    parser.add_argument("--srcarch", default="x86", type=str)
     args = parser.parse_args()
     return args
 
@@ -29,8 +31,8 @@ def main():
     os.environ["srctree"] = args.path
     os.environ["CC"] = C.CC
     os.environ["LD"] = C.LD
-    os.environ["ARCH"] = C.ARCH
-    os.environ["SRCARCH"] = C.SRCARCH
+    os.environ["ARCH"] = args.arch
+    os.environ["SRCARCH"] = args.srcarch
 
     # init llm chatter
     opt_id = args.type

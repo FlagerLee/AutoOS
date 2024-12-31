@@ -140,8 +140,8 @@ class Config:
             self.logger.error(
                 f"LLM gives non-existent nodes. current node is\n{content}\nLLM gives\n{error_answer}"
             )
-        print("content:\n", content)
-        print("selection:\n", "\n".join([f"{t[0]} {t[1]}" for t in answers]))
+        # print("content:\n", content)
+        # print("selection:\n", "\n".join([f"{t[0]} {t[1]}" for t in answers]))
         return menu_node
 
     def process_bool(self, nodes: list[klib.MenuNode]) -> list[klib.MenuNode]:
@@ -206,9 +206,15 @@ class Config:
             nodes_choices.append(choices)
             choices_name_to_node_dict_list.append(choices_name_to_node_dict)
         # get answers from LLM
-        answers = self.chatter.ask_multiple_option("\n".join(question_str_list[:-1]))
+        content = "\n".join(question_str_list[:-1])
+        answers = self.chatter.ask_multiple_option(content)
         # answer is a list of choice names, each name indicates which config should be chosen
-        assert len(answers) == len(nodes_choices)
+        if len(answers) != len(nodes_choices):
+            # LLM returns error result
+            self.logger.error(
+                f"Unmatched multiple choice: given choices\n{content}\ngot answers\n{answers}"
+            )
+            return
         for i in range(len(answers)):
             answer = answers[i].lower()
             choices_name_to_node_dict = choices_name_to_node_dict_list[i]
